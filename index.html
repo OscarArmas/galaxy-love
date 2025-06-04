@@ -47,16 +47,20 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Great Vibes",cursi
 
 /* —— Responsive —— */
 @media(max-width:768px){
+  /* Aumentamos planetas y cometa en móviles */
   .comet-bubble{left:clamp(65px,12vw,85px);font-size:clamp(.6rem,3.5vw,.8rem);max-width:160px}
   #mensaje{font-size:clamp(1.5rem,7vw,4rem)}
-  .planet{font-size:clamp(1.5rem,5vw,6rem)}
-  .planet.earth{font-size:clamp(2rem,6vw,8rem)}
-  .comet{width:clamp(50px,10vw,80px)}
+  .planet{font-size:clamp(2.5rem,10vw,10rem)}
+  .planet.earth{font-size:clamp(3.5rem,12vw,12rem)}
+  .comet{width:clamp(80px,16vw,140px)}
 }
 @media(max-width:480px){
+  /* Aumentamos aún más para teléfonos pequeños */
   .comet-bubble{left:clamp(55px,10vw,70px);font-size:clamp(.5rem,3vw,.7rem);max-width:130px}
-  #mensaje{font-size:clamp(1.2rem,6vw,3rem)}
-  .comet{width:clamp(40px,8vw,60px)}
+  #mensaje{font-size:clamp(1.4rem,8vw,3.5rem)}
+  .planet{font-size:clamp(2rem,12vw,10rem)}
+  .planet.earth{font-size:clamp(3rem,14vw,12rem)}
+  .comet{width:clamp(70px,18vw,130px)}
 }
 @media(max-height:500px) and (orientation:landscape){
   #mensaje{font-size:clamp(1rem,5vh,2.5rem)}
