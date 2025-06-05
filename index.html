@@ -9,59 +9,274 @@
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet" />
 <!-- GSAP -->
-<script src="https://unpkg.com/gsap@3.12.2/dist/gsap.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 <style>
 /* —— Reset —— */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;font-family:"Great Vibes",cursive;background:#000;color:#fff;position:relative;touch-action:manipulation}
+html,body{width:100%;height:100%;overflow:hidden;font-family:"Great Vibes",cursive;position:relative;touch-action:manipulation}
 
-/* —— Universo —— */
-.star{position:absolute;width:2px;height:2px;background:#ffffff;border-radius:50%;opacity:.8}
-.planet{position:absolute;font-size:clamp(2rem,6vw,8rem);filter:drop-shadow(0 0 8px rgba(255,255,255,.35)) blur(1px);pointer-events:none;user-select:none;opacity:.6}
-.planet.earth{font-size:clamp(3rem,8vw,12rem);opacity:.7}
+/* —— Galaxy Background —— */
+body {
+  background: radial-gradient(ellipse at center, 
+    rgba(25, 25, 112, 0.8) 0%,
+    rgba(13, 13, 47, 0.9) 25%,
+    rgba(5, 5, 25, 0.95) 50%,
+    rgba(0, 0, 0, 1) 100%
+  );
+  color: #fff;
+}
+
+/* —— Animated Nebula Background —— */
+.nebula-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.nebula-1 {
+  background: radial-gradient(circle at 20% 80%, 
+    rgba(138, 43, 226, 0.1) 0%,
+    rgba(75, 0, 130, 0.05) 50%,
+    transparent 70%
+  );
+  animation: nebulaDrift 20s ease-in-out infinite;
+}
+
+.nebula-2 {
+  background: radial-gradient(circle at 80% 20%, 
+    rgba(30, 144, 255, 0.08) 0%,
+    rgba(0, 191, 255, 0.04) 50%,
+    transparent 70%
+  );
+  animation: nebulaDrift 25s ease-in-out infinite reverse;
+}
+
+.nebula-3 {
+  background: radial-gradient(circle at 60% 60%, 
+    rgba(255, 20, 147, 0.06) 0%,
+    rgba(186, 85, 211, 0.03) 50%,
+    transparent 70%
+  );
+  animation: nebulaDrift 30s ease-in-out infinite;
+}
+
+@keyframes nebulaDrift {
+  0%, 100% { transform: translateX(0) translateY(0) scale(1); }
+  25% { transform: translateX(20px) translateY(-15px) scale(1.1); }
+  50% { transform: translateX(-10px) translateY(10px) scale(0.9); }
+  75% { transform: translateX(15px) translateY(-5px) scale(1.05); }
+}
+
+/* —— Enhanced Stars —— */
+.star{
+  position:absolute;
+  border-radius:50%;
+  opacity:.8;
+  background: #ffffff;
+  box-shadow: 0 0 4px rgba(255,255,255,0.5);
+}
+
+.star.twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.star.shooting {
+  background: linear-gradient(45deg, #ffffff, rgba(255,255,255,0));
+  border-radius: 50% 0 50% 0;
+  animation: shootingStar 4s linear infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes shootingStar {
+  0% { 
+    transform: translateX(-100px) translateY(50px) rotate(45deg);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { 
+    transform: translateX(calc(100vw + 100px)) translateY(-50px) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+/* —— Floating Particles —— */
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }
+  50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
+}
+
+.planet{
+  position:absolute;
+  font-size:clamp(2rem,6vw,8rem);
+  filter:drop-shadow(0 0 12px rgba(255,255,255,.5)) drop-shadow(0 0 24px rgba(135,206,235,.3));
+  pointer-events:none;
+  user-select:none;
+  opacity:.8;
+}
+
+.planet.earth{
+  font-size:clamp(3rem,8vw,12rem);
+  opacity:.9;
+  filter:drop-shadow(0 0 15px rgba(255,255,255,.6)) drop-shadow(0 0 30px rgba(100,149,237,.4));
+}
 
 /* —— UFO (oculto) —— */
 .ufo{display:none;}
 
 /* —— Cometa Interactivo —— */
-.comet-container{position:absolute;cursor:pointer;user-select:none;z-index:3;touch-action:manipulation}
-/* aura suavizada */
-.comet{width:clamp(60px,12vw,100px);filter:drop-shadow(0 0 6px rgba(255,255,255,.6)) drop-shadow(0 0 15px rgba(100,149,237,.35));transition:filter .3s}
-.comet-container:hover .comet{filter:drop-shadow(0 0 8px rgba(255,255,255,.7)) drop-shadow(0 0 20px rgba(135,206,235,.5))}
+.comet-container{
+  position:absolute;
+  cursor:pointer;
+  user-select:none;
+  z-index:3;
+  touch-action:manipulation;
+}
+
+.comet{
+  width:clamp(60px,12vw,100px);
+  filter:drop-shadow(0 0 8px rgba(255,255,255,.7)) 
+          drop-shadow(0 0 20px rgba(100,149,237,.5))
+          drop-shadow(0 0 35px rgba(135,206,235,.3));
+  transition:filter .3s ease;
+}
+
+.comet-container:hover .comet{
+  filter:drop-shadow(0 0 12px rgba(255,255,255,.9)) 
+          drop-shadow(0 0 25px rgba(135,206,235,.7))
+          drop-shadow(0 0 45px rgba(100,149,237,.5));
+}
 
 /* —— Burbuja del Cometa —— */
-/* subimos ligeramente la burbuja */
-.comet-bubble{position:absolute;left:clamp(80px,14vw,110px);top:-10%;transform:translateY(-100%);background:#fff;color:#000;padding:clamp(4px,2vw,6px) clamp(8px,3vw,12px);border-radius:10px;font-family:'Poppins',sans-serif;font-size:clamp(.7rem,3vw,.9rem);font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,.4);white-space:normal;opacity:0;max-width:220px;line-height:1.2}
-.comet-bubble::after{content:"";position:absolute;left:-8px;top:100%;transform:translateY(-20%) rotate(90deg);border:8px solid transparent;border-right-color:#fff}
+.comet-bubble{
+  position:absolute;
+  left:clamp(80px,14vw,110px);
+  top:-10%;
+  transform:translateY(-100%);
+  background:linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+  color:#000;
+  padding:clamp(4px,2vw,6px) clamp(8px,3vw,12px);
+  border-radius:12px;
+  font-family:'Poppins',sans-serif;
+  font-size:clamp(.7rem,3vw,.9rem);
+  font-weight:600;
+  box-shadow:0 4px 15px rgba(0,0,0,.3), 0 0 20px rgba(135,206,235,.2);
+  white-space:normal;
+  opacity:0;
+  max-width:220px;
+  line-height:1.2;
+  border: 1px solid rgba(135,206,235,.3);
+}
+
+.comet-bubble::after{
+  content:"";
+  position:absolute;
+  left:-8px;
+  top:100%;
+  transform:translateY(-20%) rotate(90deg);
+  border:8px solid transparent;
+  border-right-color:#ffffff;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.1));
+}
 
 /* —— Mensaje Central —— */
-/* lo posicionaremos dinámicamente debajo del cometa */
-#mensaje{position:absolute;left:50%;top:70%;transform:translateX(-50%);font-family:'Poppins',sans-serif;font-weight:700;font-size:clamp(2rem,8vw,6rem);text-shadow:0 0 12px rgba(255,255,255,.85);opacity:0;pointer-events:none;z-index:2;text-align:center;max-width:90vw;word-wrap:break-word}
+#mensaje{
+  position:absolute;
+  left:50%;
+  top:70%;
+  transform:translateX(-50%);
+  font-family:'Poppins',sans-serif;
+  font-weight:700;
+  font-size:clamp(2rem,8vw,6rem);
+  text-shadow:0 0 15px rgba(255,255,255,.9), 0 0 30px rgba(135,206,235,.6), 0 0 45px rgba(100,149,237,.4);
+  opacity:0;
+  pointer-events:none;
+  z-index:2;
+  text-align:center;
+  max-width:90vw;
+  word-wrap:break-word;
+  background: linear-gradient(45deg, #ffffff, #e6f3ff, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.2); }
+}
 
 /* —— Easter egg —— */
-.easter-egg{position:absolute;font-size:clamp(20px,5vw,26px);left:85%;top:8%;cursor:pointer;opacity:.3;touch-action:manipulation}
+.easter-egg{
+  position:absolute;
+  font-size:clamp(20px,5vw,26px);
+  left:85%;
+  top:8%;
+  cursor:pointer;
+  opacity:.4;
+  touch-action:manipulation;
+  filter: drop-shadow(0 0 8px rgba(255,255,255,.5));
+  transition: all 0.3s ease;
+}
+
+.easter-egg:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 12px rgba(255,255,255,.8));
+}
 
 /* —— Efectos del cometa —— */
-.comet-trail{position:absolute;width:100%;height:100%;background:linear-gradient(to left,rgba(255,255,255,0.25),transparent);filter:blur(2px);opacity:0.55;transform:scaleX(1.5) translateX(-20%);animation:trailFlicker 2s ease-in-out infinite}
-@keyframes trailFlicker{0%,100%{opacity:0.55}50%{opacity:0.75}}
+.comet-trail{
+  position:absolute;
+  width:50%;
+  height:10%;
+  background:linear-gradient(to left,rgba(255,255,255,0.3),rgba(135,206,235,0.2),transparent);
+  filter:blur(3px);
+  opacity:0.6;
+  transform:scaleX(1.8) translateX(-25%);
+  animation:trailFlicker 2s ease-in-out infinite;
+}
+
+@keyframes trailFlicker{
+  0%,100%{opacity:0.6}
+  50%{opacity:0.9}
+}
 
 /* —— Responsive —— */
 @media(max-width:768px){
-  /* Aumentamos planetas y cometa en móviles */
   .comet-bubble{left:clamp(65px,12vw,85px);font-size:clamp(.6rem,3.5vw,.8rem);max-width:160px}
   #mensaje{font-size:clamp(1.5rem,7vw,4rem)}
   .planet{font-size:clamp(2.5rem,10vw,10rem)}
   .planet.earth{font-size:clamp(3.5rem,12vw,12rem)}
   .comet{width:clamp(80px,16vw,140px)}
 }
+
 @media(max-width:480px){
-  /* Aumentamos aún más para teléfonos pequeños */
   .comet-bubble{left:clamp(55px,10vw,70px);font-size:clamp(.5rem,3vw,.7rem);max-width:130px}
   #mensaje{font-size:clamp(1.4rem,8vw,3.5rem)}
   .planet{font-size:clamp(2rem,12vw,10rem)}
   .planet.earth{font-size:clamp(3rem,14vw,12rem)}
   .comet{width:clamp(70px,18vw,130px)}
 }
+
 @media(max-height:500px) and (orientation:landscape){
   #mensaje{font-size:clamp(1rem,5vh,2.5rem)}
   .planet{font-size:clamp(1rem,4vh,4rem)}
@@ -70,7 +285,13 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:"Great Vibes",cursi
 </style>
 </head>
 <body>
+<!-- Nebula Layers -->
+<div class="nebula-layer nebula-1"></div>
+<div class="nebula-layer nebula-2"></div>
+<div class="nebula-layer nebula-3"></div>
+
 <div id="mensaje">¡Eres la más hermosa!</div>
+
 <script>
 window.addEventListener('DOMContentLoaded', () => {
 let centralShown=false;
@@ -80,16 +301,50 @@ let cometInteraction=false;
 /* —— Utilidades —— */
 const updateDeviceType=()=>{isMobile=window.innerWidth<=768};
 
-/* —— Estrellas —— */
-const createStars=(n=isMobile?150:250)=>{
+/* —— Estrellas Mejoradas —— */
+const createStars=(n=isMobile?200:350)=>{
   document.querySelectorAll('.star').forEach(s=>s.remove());
+  document.querySelectorAll('.particle').forEach(p=>p.remove());
+  
+  // Crear estrellas normales
   for(let i=0;i<n;i++){
-    const s=document.createElement('div');s.className='star';
+    const s=document.createElement('div');
+    s.className='star';
+    
+    // Diferentes tipos de estrellas
+    const rand = Math.random();
+    if(rand < 0.1) s.classList.add('shooting');
+    else if(rand < 0.4) s.classList.add('twinkle');
+    
     s.style.left=Math.random()*innerWidth+'px';
     s.style.top=Math.random()*innerHeight+'px';
-    const size=Math.random()*2+1;s.style.width=size+'px';s.style.height=size+'px';
+    
+    const size=Math.random()*3+1;
+    s.style.width=size+'px';
+    s.style.height=size+'px';
+    
     document.body.appendChild(s);
-    gsap.to(s,{opacity:0,yoyo:true,repeat:-1,duration:gsap.utils.random(1,3),ease:'sine.inOut',delay:gsap.utils.random(0,3)});
+    
+    if(!s.classList.contains('shooting')) {
+      gsap.to(s,{
+        opacity:Math.random()*0.5+0.3,
+        yoyo:true,
+        repeat:-1,
+        duration:gsap.utils.random(1,4),
+        ease:'sine.inOut',
+        delay:gsap.utils.random(0,3)
+      });
+    }
+  }
+  
+  // Crear partículas flotantes
+  for(let i=0;i<(isMobile?30:50);i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    p.style.left=Math.random()*innerWidth+'px';
+    p.style.top=Math.random()*innerHeight+'px';
+    p.style.animationDelay=Math.random()*8+'s';
+    document.body.appendChild(p);
   }
 };
 
@@ -97,28 +352,81 @@ const createStars=(n=isMobile?150:250)=>{
 const createPlanets=()=>{
   document.querySelectorAll('.planet').forEach(p=>p.remove());
   const data=isMobile?[
- {e:'🪐',cls:'',left:20,top:15},
- {e:'🌍',cls:'earth',left:50,top:35},
- {e:'🌕',cls:'',left:75,top:20},
- {e:'🛰️',cls:'',left:25,top:75}
+    {e:'🪐',cls:'',left:20,top:15},
+    {e:'🌍',cls:'earth',left:50,top:35},
+    {e:'🌕',cls:'',left:75,top:20},
+    {e:'🛰️',cls:'',left:25,top:75}
   ]:[
- {e:'🪐',cls:'',left:15,top:22},
- {e:'🌍',cls:'earth',left:50,top:48},
- {e:'🌕',cls:'',left:80,top:28},
- {e:'🛰️',cls:'',left:22,top:78}
+    {e:'🪐',cls:'',left:15,top:22},
+    {e:'🌍',cls:'earth',left:50,top:48},
+    {e:'🌕',cls:'',left:80,top:28},
+    {e:'🛰️',cls:'',left:22,top:78}
   ];
+  
   data.forEach(d=>{
-    const p=document.createElement('span');p.className='planet '+(d.cls||'');p.textContent=d.e;
-    p.style.left=d.left+'vw';p.style.top=d.top+'vh';document.body.appendChild(p);
-    const float=isMobile?15:30;gsap.to(p,{yoyo:true,repeat:-1,duration:gsap.utils.random(10,16),ease:'sine.inOut',y:'+='+float});
+    const p=document.createElement('span');
+    p.className='planet '+(d.cls||'');
+    p.textContent=d.e;
+    p.style.left=d.left+'vw';
+    p.style.top=d.top+'vh';
+    document.body.appendChild(p);
+    
+    const float=isMobile?15:30;
+    gsap.to(p,{
+      yoyo:true,
+      repeat:-1,
+      duration:gsap.utils.random(10,16),
+      ease:'sine.inOut',
+      y:'+='+float,
+      rotation: '+=5'
+    });
   });
 };
 
 /* —— Easter Egg —— */
 const createEasterEgg=()=>{
   document.querySelectorAll('.easter-egg').forEach(e=>e.remove());
-  const egg=document.createElement('div');egg.className='easter-egg';egg.textContent='⭐';document.body.appendChild(egg);
-  egg.addEventListener('click',()=>{gsap.to(egg,{scale:1.8,rotation:360,duration:1.2,yoyo:true,repeat:1});alert('¡Descubriste el Easter Egg! ✨');});
+  const egg=document.createElement('div');
+  egg.className='easter-egg';
+  egg.textContent='⭐';
+  document.body.appendChild(egg);
+  
+  egg.addEventListener('click',()=>{
+    gsap.to(egg,{
+      scale:2,
+      rotation:720,
+      duration:1.5,
+      yoyo:true,
+      repeat:1,
+      ease:'back.out(1.7)'
+    });
+    
+    // Crear explosión de partículas
+    for(let i=0;i<12;i++){
+      const particle=document.createElement('div');
+      particle.style.position='absolute';
+      particle.style.left=egg.offsetLeft+'px';
+      particle.style.top=egg.offsetTop+'px';
+      particle.style.width='4px';
+      particle.style.height='4px';
+      particle.style.background='#ffffff';
+      particle.style.borderRadius='50%';
+      particle.style.pointerEvents='none';
+      document.body.appendChild(particle);
+      
+      const angle=(360/12)*i;
+      gsap.to(particle,{
+        x:Math.cos(angle*Math.PI/180)*100,
+        y:Math.sin(angle*Math.PI/180)*100,
+        opacity:0,
+        duration:1.5,
+        ease:'power2.out',
+        onComplete:()=>particle.remove()
+      });
+    }
+    
+    alert('¡Descubriste el Easter Egg! ✨');
+  });
 };
 
 /* —— Cometa Interactivo —— */
@@ -128,10 +436,22 @@ const createInteractiveComet=()=>{
   container.className='comet-container';
 
   const comet=document.createElement('img');
-  comet.src='ufo.png'; // Asegúrate de tener una imagen de cometa en el mismo directorio
+  comet.src='ufo.png';
   comet.alt='Cometa';
   comet.className='comet';
+  comet.onerror=()=>{
+    // Fallback si no se encuentra la imagen
+    comet.style.display='none';
+    const fallback=document.createElement('div');
+    fallback.innerHTML='☄️';
+    fallback.style.fontSize='clamp(60px,12vw,100px)';
+    fallback.style.filter='drop-shadow(0 0 8px rgba(255,255,255,.7))';
+    container.appendChild(fallback);
+  };
 
+  const trail=document.createElement('div');
+  trail.className='comet-trail';
+  container.appendChild(trail);
   container.appendChild(comet);
   document.body.appendChild(container);
 
@@ -148,29 +468,60 @@ const createInteractiveComet=()=>{
     bubble.innerHTML='Buscando<br>a la más hermosa!!';
     container.appendChild(bubble);
 
-    gsap.fromTo(bubble,{opacity:0},{opacity:1,duration:.4});
+    gsap.fromTo(bubble,{opacity:0,scale:0.8},{opacity:1,scale:1,duration:.6,ease:'back.out(1.7)'});
 
     setTimeout(()=>{
       bubble.innerHTML='¡Ajá,<br>te encontré!';
       gsap.killTweensOf(container);
 
       const centerX=innerWidth/2-50,centerY=innerHeight/2-20,scale=isMobile?2:2.5;
-      gsap.to(container,{x:centerX,y:centerY,scale,rotation:0,duration:1.2,ease:'power2.out',onComplete:() => {
-        /* —— Colocamos el mensaje justo debajo del cometa —— */
-        const rect=container.getBoundingClientRect();
-        const msg=document.getElementById('mensaje');
-        msg.style.left=(rect.left+rect.width/2)+'px';
-        msg.style.top=(rect.bottom+20)+'px';
-      }});
+      gsap.to(container,{
+        x:centerX,
+        y:centerY,
+        scale,
+        rotation:0,
+        duration:1.5,
+        ease:'power2.out',
+        onComplete:() => {
+          const rect=container.getBoundingClientRect();
+          const msg=document.getElementById('mensaje');
+          msg.style.left=(rect.left+rect.width/2)+'px';
+          msg.style.top=(rect.bottom+20)+'px';
+        }
+      });
 
       if(!centralShown){
         centralShown=true;
-        gsap.fromTo(mensaje,{opacity:0,scale:.85},{opacity:1,scale:1,duration:1.2,ease:'back.out(1.7)',delay:.6});
-        gsap.to(mensaje,{scale:1.05,yoyo:true,repeat:-1,duration:4,ease:'sine.inOut',delay:1.5});
+        gsap.fromTo(mensaje,{opacity:0,scale:.85,y:20},{
+          opacity:1,
+          scale:1,
+          y:0,
+          duration:1.5,
+          ease:'back.out(1.7)',
+          delay:.8
+        });
+        gsap.to(mensaje,{
+          scale:1.05,
+          yoyo:true,
+          repeat:-1,
+          duration:4,
+          ease:'sine.inOut',
+          delay:2
+        });
       }
     },2000);
 
-    gsap.to(bubble,{opacity:0,duration:1,delay:4,onComplete:()=>{bubble.remove();cometInteraction=false;}});
+    gsap.to(bubble,{
+      opacity:0,
+      scale:0.8,
+      duration:1,
+      delay:5,
+      ease:'power2.in',
+      onComplete:()=>{
+        bubble.remove();
+        cometInteraction=false;
+      }
+    });
     e.stopPropagation();
   };
 
@@ -182,9 +533,15 @@ const createInteractiveComet=()=>{
     if(cometInteraction) return;
     const startX=-120,endX=innerWidth+120,startY=gsap.utils.random(50,innerHeight-150),endY=startY-gsap.utils.random(80,120);
     gsap.set(container,{x:startX,y:startY,rotation:15});
-    gsap.to(container,{x:endX,y:endY,duration:gsap.utils.random(14,20),ease:'none',onComplete:()=>{
-      if(!cometInteraction) fly();
-    }});
+    gsap.to(container,{
+      x:endX,
+      y:endY,
+      duration:gsap.utils.random(12,18),
+      ease:'none',
+      onComplete:()=>{
+        if(!cometInteraction) fly();
+      }
+    });
   };
 
   fly();
