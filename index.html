@@ -283,6 +283,10 @@ body {
   .planet.earth{font-size:clamp(1.5rem,5vh,6rem)}
 }
 </style>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 <!-- Nebula Layers -->
@@ -384,48 +388,61 @@ const createPlanets=()=>{
 };
 
 /* —— Easter Egg —— */
-const createEasterEgg=()=>{
-  document.querySelectorAll('.easter-egg').forEach(e=>e.remove());
-  const egg=document.createElement('div');
-  egg.className='easter-egg';
-  egg.textContent='⭐';
+const createEasterEgg = () => {
+  document.querySelectorAll('.easter-egg').forEach(e => e.remove());
+  const egg = document.createElement('div');
+  egg.className = 'easter-egg';
+  egg.textContent = '⭐';
   document.body.appendChild(egg);
-  
-  egg.addEventListener('click',()=>{
-    gsap.to(egg,{
-      scale:2,
-      rotation:720,
-      duration:1.5,
-      yoyo:true,
-      repeat:1,
-      ease:'back.out(1.7)'
+
+  egg.addEventListener('click', () => {
+    gsap.to(egg, {
+      scale: 2,
+      rotation: 720,
+      duration: 1.5,
+      yoyo: true,
+      repeat: 1,
+      ease: 'back.out(1.7)'
     });
-    
-    // Crear explosión de partículas
-    for(let i=0;i<12;i++){
-      const particle=document.createElement('div');
-      particle.style.position='absolute';
-      particle.style.left=egg.offsetLeft+'px';
-      particle.style.top=egg.offsetTop+'px';
-      particle.style.width='4px';
-      particle.style.height='4px';
-      particle.style.background='#ffffff';
-      particle.style.borderRadius='50%';
-      particle.style.pointerEvents='none';
-      document.body.appendChild(particle);
-      
-      const angle=(360/12)*i;
-      gsap.to(particle,{
-        x:Math.cos(angle*Math.PI/180)*100,
-        y:Math.sin(angle*Math.PI/180)*100,
-        opacity:0,
-        duration:1.5,
-        ease:'power2.out',
-        onComplete:()=>particle.remove()
+
+    // Crear imagen que se mueve por el espacio con su propia estela
+    const movingImageContainer = document.createElement('div');
+    movingImageContainer.style.position = 'absolute';
+    movingImageContainer.style.zIndex = '1';
+
+    const movingImage = document.createElement('img');
+    movingImage.src = 'image.png';
+    movingImage.alt = 'Moving Image';
+    movingImage.style.width = 'clamp(40px, 8vw, 60px)';
+    movingImage.style.filter = 'drop-shadow(0 0 8px rgba(255,255,255,.7)) drop-shadow(0 0 20px rgba(100,149,237,.5))';
+    movingImageContainer.appendChild(movingImage);
+
+    const trail = document.createElement('div');
+    trail.className = 'comet-trail';
+    trail.style.background = 'linear-gradient(to left, rgba(255,255,255,0.3), rgba(135,206,235,0.2), transparent)';
+    trail.style.filter = 'blur(3px)';
+    trail.style.opacity = '0.6';
+    trail.style.width = '100%';
+    trail.style.height = '100%';
+    trail.style.position = 'absolute';
+    trail.style.transform = 'scaleX(1.8) translateX(-25%)';
+    movingImageContainer.appendChild(trail);
+
+    document.body.appendChild(movingImageContainer);
+
+    const moveImage = () => {
+      const startX = -120, endX = innerWidth + 120;
+      const startY = gsap.utils.random(50, innerHeight - 150);
+      gsap.set(movingImageContainer, { x: startX, y: startY });
+      gsap.to(movingImageContainer, {
+        x: endX,
+        duration: gsap.utils.random(12, 18),
+        ease: 'none',
+        onComplete: moveImage
       });
-    }
-    
-    alert('¡Descubriste el Easter Egg! ✨');
+    };
+
+    moveImage();
   });
 };
 
